@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Keranjang belanja Sweety Fruity, tempat Anda melihat dan mengelola produk yang ingin dibeli.">
+  <title>Keranjang | Sweety Fruity</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-pink-50 font-sans">
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+      <img src="Logo-Sweety-Fruity.png.jpeg" alt="Logo Sweety Fruity" class="w-14 h-14 rounded-full">
+      <h1 class="text-2xl font-bold text-pink-600">SWEETY FRUITY</h1>
+    </div>
+     <nav class="space-x-4">
+      <a href="index.html" class="text-pink-500 hover:underline">Home</a>
+      <a href="profile.html" class="text-pink-500 hover:underline">Profile</a>
+      <a href="produk.html" class="text-pink-500 hover:underline">Produk</a>
+      <a href="keranjang.html" class="text-pink-500 hover:underline">Keranjang</a>
+      <a href="checkout.html" class="text-pink-500 hover:underline">Checkout</a>
+      <a href="riwayat.html" class="text-pink-500 hover:underline">Riwayat</a>
+    </nav>
+  </header>
+
+  <!-- Keranjang -->
+  <main class="p-6 max-w-4xl mx-auto">
+    <h2 class="text-2xl font-bold text-pink-700 mb-6 text-center">Keranjang Belanja</h2>
+    <div id="daftar-keranjang" class="space-y-4"></div>
+
+    <div class="flex justify-between items-center mt-6">
+      <p class="text-lg font-bold">Total: Rp <span id="total-harga">0</span></p>
+      <button onclick="lanjutCheckout()" class="bg-green-500 text-white px-4 py-2 rounded">Check Out</button>
+    </div>
+  </main>
+
+  <script>
+    function ambilKeranjang() {
+      return JSON.parse(localStorage.getItem('keranjang') || '[]');
+    }
+
+    function simpanKeranjang(data) {
+      localStorage.setItem('keranjang', JSON.stringify(data));
+    }
+
+    function hapusItem(index) {
+      const data = ambilKeranjang();
+      data.splice(index, 1);
+      simpanKeranjang(data);
+      tampilkanKeranjang();
+    }
+
+    function tampilkanKeranjang() {
+      const container = document.getElementById('daftar-keranjang');
+      const data = ambilKeranjang();
+      let total = 0;
+      container.innerHTML = '';
+
+      if (data.length === 0) {
+        container.innerHTML = `<p class='text-gray-500 text-center'>Keranjang Anda kosong.</p>`;
+        document.getElementById('total-harga').textContent = '0';
+        return;
+      }
+
+      data.forEach((item, index) => {
+        const elemen = document.createElement('div');
+        elemen.className = "bg-white p-4 rounded shadow flex justify-between items-center";
+        elemen.innerHTML = `
+          <div class="flex items-center space-x-4">
+            <img src="${item.gambar}" alt="${item.nama}" class="w-20 h-20 object-cover rounded">
+            <div>
+              <h3 class="font-bold text-lg">${item.nama}</h3>
+              <p>Qty: ${item.jumlah}</p>
+              <p class="text-pink-600 font-semibold">Rp ${(item.harga * item.jumlah).toLocaleString()}</p>
+            </div>
+          </div>
+          <button onclick="hapusItem(${index})" class="text-red-500 text-lg">🗑️</button>
+        `;
+        total += item.harga * item.jumlah;
+        container.appendChild(elemen);
+      });
+
+      document.getElementById('total-harga').textContent = total.toLocaleString();
+    }
+
+    function lanjutCheckout() {
+	  const data = JSON.parse(localStorage.getItem('keranjang') || '[]');
+  
+  if (data.length === 0) {
+    alert("Keranjang Anda kosong! Silakan tambahkan produk sebelum melanjutkan ke checkout.");
+    // Opsi untuk kembali ke halaman produk
+    // window.location.href = 'produk.html'; // Uncomment jika ingin mengarahkan kembali
+    return;
+  }
+  // Menampilkan daftar produk di keranjang (opsional)
+  let daftarProduk = data.map(item => `${item.nama} - Rp ${item.harga}`).join(', ');
+  alert(`Anda memiliki produk berikut di keranjang: ${daftarProduk}`);
+  // Arahkan ke halaman checkout
+      window.location.href = 'checkout.html';
+    }
+
+    tampilkanKeranjang();
+  </script>
+
+  <!-- Footer -->
+  <footer class="bg-white text-center py-4 shadow-inner text-sm text-gray-500 mt-12">
+    &copy; <span id="currentYear"></span> Sweety Fruity. All rights reserved.
+  </footer>
+
+  <script>
+    // Update the copyright year dynamically
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Riwayat Pemesanan | Sweety Fruity</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body class="bg-pink-50 font-sans">
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+      <img src="Logo-Sweety-Fruity.png.jpeg" alt="Logo Sweety Fruity" class="w-14 h-14 rounded-full">
+      <h1 class="text-2xl font-bold text-pink-600">SWEETY FRUITY</h1>
+    </div>
+     <nav class="space-x-4">
+      <a href="index.html" class="text-pink-500 hover:underline">Home</a>
+      <a href="profile.html" class="text-pink-500 hover:underline">Profile</a>
+      <a href="produk.html" class="text-pink-500 hover:underline">Produk</a>
+      <a href="keranjang.html" class="text-pink-500 hover:underline">Keranjang</a>
+      <a href="checkout.html" class="text-pink-500 hover:underline">Checkout</a>
+      <a href="riwayat.html" class="text-pink-500 hover:underline">Riwayat</a>
+    </nav>
+  </header>
+
+  <!-- Riwayat -->
+  <main class="max-w-5xl mx-auto p-6">
+    <h2 class="text-2xl font-bold text-pink-700 text-center mb-6">Riwayat Pemesanan</h2>
+    <div id="daftar-riwayat" class="space-y-4"></div>
+    <div class="text-center mt-4">
+      <a href="produk.html" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Kembali ke Produk</a>
+    </div>
+  </main>
+
+  <footer class="bg-white text-center py-4 shadow-inner text-sm text-gray-500 mt-12">
+    &copy; <span id="currentYear"></span> Sweety Fruity. All rights reserved.
+  </footer>
+
+  <script>
+    const riwayat = JSON.parse(localStorage.getItem('riwayat') || '[]');
+    const container = document.getElementById('daftar-riwayat');
+
+    function renderRiwayat() {
+      container.innerHTML = ''; // Clear previous content
+
+      if (riwayat.length === 0) {
+        container.innerHTML = '<p class="text-gray-500 text-center">Belum ada riwayat pemesanan.</p>';
+      } else {
+        riwayat.forEach((entry, index) => {
+          const div = document.createElement('div');
+          div.className = 'bg-white p-4 rounded shadow transition-transform transform hover:scale-105 relative';
+
+          const daftarProduk = entry.pesanan.map(p => `
+            <li class="flex justify-between">
+              <span>${p.nama} x ${p.jumlah}</span>
+              <span>Rp ${(p.harga * p.jumlah).toLocaleString()}</span>
+            </li>`).join('');
+
+          div.innerHTML = `
+            <button class="absolute top-2 right-2 text-red-500 hover:text-red-700 text-xl" onclick="hapusRiwayat(${index})">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+            <p class="font-semibold">Tanggal Pemesanan: ${entry.tanggal}</p>
+            <ul class="list-disc ml-6 my-2">${daftarProduk}</ul>
+            <p class="font-semibold">Total Pembayaran: <span class="text-pink-700">Rp ${entry.total}</span></p>
+            <p class="font-medium">Estimasi Tiba: ${entry.estimasi}</p>
+			<p class="font-medium">Status: 
+  <span class="${entry.konfirmasi ? 'text-green-600' : 'text-yellow-600'}">
+    ${entry.konfirmasi ? 'Pembayaran Terkonfirmasi' : 'Menunggu Pembayaran'}
+  </span>
+</p>
+${!entry.konfirmasi ? `<button onclick="konfirmasiPembayaran(${index})" class="mt-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Konfirmasi Pembayaran</button>` : ''}
+
+          `;
+		  
+
+          container.appendChild(div);
+        });
+      }
+    }
+
+    function hapusRiwayat(index) {
+      if (confirm("Apakah Anda yakin ingin menghapus riwayat ini?")) {
+        riwayat.splice(index, 1);
+        localStorage.setItem('riwayat', JSON.stringify(riwayat));
+        renderRiwayat();
+      }
+    }
+	function konfirmasiPembayaran(index) {
+  localStorage.setItem('checkout_index', index);
+  window.location.href = 'payment_metode.html';
+}
+
+
+    renderRiwayat();
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

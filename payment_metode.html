@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pembayaran | Sweety Fruity</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-pink-50 font-sans">
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+	<img src="Logo-Sweety-Fruity.png.jpeg" alt="Logo Sweety Fruity" class="w-14 h-14 rounded-full">
+      <h1 class="text-2xl font-bold text-pink-600">SWEETY FRUITY</h1>
+    </div>
+    <nav class="space-x-4">
+      <a href="index.html" class="text-pink-500 hover:underline">Home</a>
+      <a href="produk.html" class="text-pink-500 hover:underline">Produk</a>
+      <a href="riwayat.html" class="text-pink-500 hover:underline">Riwayat</a>
+    </nav>
+  </header>
+&nbsp;
+&nbsp;
+
+  <section class="p-6 max-w-2xl mx-auto">
+    <h2 class="text-2xl font-bold text-center text-pink-700 mb-6">Konfirmasi Pembayaran</h2>
+&nbsp;
+&nbsp;
+
+    <div class="bg-white shadow rounded p-4">
+      <p class="mb-2">Silakan transfer ke salah satu metode berikut:</p>
+      <ul class="list-disc list-inside mb-4 text-gray-700">
+        <li><strong>Transfer Bank BNI:</strong> 085721390833 a.n. SWEETY FRUITY</li>
+		<li><strong>Transfer Bank BRI:</strong> 085721390833 a.n. SWEETY FRUITY</li>
+        <li><strong>E-Wallet Dana:</strong> 0857-2139-0833</li>
+		<li><strong>E-Wallet OVO:</strong> 0857-2139-0833</li>
+		<li><strong>E-Wallet ShopeePay:</strong> 0857-2139-0833</li>
+        <li><strong>COD / Tunai:</strong> Bayar di tempat</li>
+      </ul>
+&nbsp;
+&nbsp;
+
+      <label class="block mb-2 font-semibold">Unggah Bukti Pembayaran</label>
+      <input type="file" id="bukti" accept="image/*" class="mb-4 w-full border p-2 rounded">
+&nbsp;
+&nbsp;
+
+      <label class="block mb-2 font-semibold">Catatan Tambahan</label>
+      <textarea class="w-full border p-2 rounded mb-4" placeholder="Contoh: Sudah transfer via BCA pukul 10:15"></textarea>
+&nbsp;
+&nbsp;
+
+      <button onclick="selesaiPembayaran()" class="bg-green-500 text-white px-6 py-2 rounded w-full">Selesaikan Pembayaran</button>
+    </div>
+  </section>
+&nbsp;
+&nbsp;
+
+  <script>
+  const metode = localStorage.getItem('payment_metode') || 'cod';
+  const index = parseInt(localStorage.getItem('payment_index'), 10);
+  document.getElementById('metode-dipilih').textContent = {
+    cod: "COD / Tunai",
+    bni: "Transfer Bank - BNI",
+	bri: "Transfer Bank - BRI",
+    dana: "E-Wallet - DANA",
+	ovo: "E-Wallet - OVO",
+	shopeepay: "E-Wallet - ShopeePay"
+  }[metode];
+
+  function selesaiPembayaran() {
+    const bukti = document.getElementById('bukti') 
+    }
+
+    // Update status konfirmasi
+    const riwayat = JSON.parse(localStorage.getItem('riwayat') || '[]');
+    if (riwayat[index]) {
+      riwayat[index].konfirmasi = true;
+      localStorage.setItem('riwayat', JSON.stringify(riwayat));
+    }
+
+    alert("Pembayaran Anda telah dikonfirmasi! Terima kasih telah berbelanja di Sweety Fruity.");
+	// Arahkan ke halaman Riwayat
+    window.location.href = "riwayat.html";
+	if (metode === 'cod') {
+  const buktiLabel = document.querySelector('label[for="bukti"]');
+  if (buktiLabel) buktiLabel.style.display = 'none';
+  if (bukti) bukti.style.display = 'none';
+}
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | Sweety Fruity</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-pink-50 font-sans">
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex justify-between items-center">
+    <div class="flex items-center space-x-4">
+      <img src="Logo-Sweety-Fruity.png.jpeg" alt="Logo Sweety Fruity" class="w-14 h-14 rounded-full">
+      <h1 class="text-2xl font-bold text-pink-600">SWEETY FRUITY</h1>
+    </div>
+     <nav class="space-x-4">
+      <a href="index.html" class="text-pink-500 hover:underline">Home</a>
+      <a href="profile.html" class="text-pink-500 hover:underline">Profile</a>
+      <a href="produk.html" class="text-pink-500 hover:underline">Produk</a>
+      <a href="keranjang.html" class="text-pink-500 hover:underline">Keranjang</a>
+      <a href="checkout.html" class="text-pink-500 hover:underline">Checkout</a>
+      <a href="riwayat.html" class="text-pink-500 hover:underline">Riwayat</a>
+    </nav>
+  </header>
+
+  <!-- Checkout -->
+  <main class="max-w-5xl mx-auto p-6 space-y-6">
+    <h2 class="text-2xl font-bold text-pink-700 text-center">Checkout Pesanan</h2>
+
+    <!-- Rincian Produk -->
+    <section class="bg-white p-4 rounded shadow space-y-4">
+      <h3 class="font-semibold">Rincian Produk</h3>
+      <div id="rincian-pesanan"></div>
+    </section>
+
+    <!-- Alamat -->
+    <section class="bg-white p-4 rounded shadow">
+      <h3 class="font-semibold mb-2">Alamat Pengiriman</h3>
+      <select id="alamat" onchange="updateOngkir()" class="w-full border rounded p-2" aria-label="Alamat Pengiriman">
+        <option value="Bandung">Bandung</option>
+        <option value="Bandung Raya">Bandung Raya</option>
+        <option value="Jabodetabek">Jabodetabek</option>
+        <option value="Luar Jawa Barat">Luar Jawa Barat</option>
+      </select>
+    </section>
+
+    <!-- Form Tambahan -->
+    <section class="bg-white p-4 rounded shadow space-y-4">
+      <input type="text" id="kode-voucher" placeholder="Masukkan kode voucher" class="border rounded p-2 w-full" aria-label="Kode Voucher">
+      <textarea id="catatan" placeholder="Catatan untuk penjual (opsional)" class="border rounded p-2 w-full" aria-label="Catatan untuk Penjual"></textarea>
+      <div>
+        <label for="pengiriman" class="block font-medium">Opsi Pengiriman</label>
+        <select id="pengiriman" class="border rounded p-2 w-full" aria-label="Opsi Pengiriman">
+          <option value="standar">Standar - Gosend-Gojek</option>
+          <option value="ekspres">Ekspres - Grab Express Instant</option>
+          <option value="prioritas">Prioritas - J&T</option>
+        </select>
+      </div>
+      <div>
+        <label for="voucher-pilih" class="block font-medium">Pilih Voucher</label>
+        <select id="voucher-pilih" class="border rounded p-2 w-full" aria-label="Pilih Voucher">
+          <option value="none">Tidak Ada</option>
+          <option value="gratis-ongkir">Gratis Ongkir (-Rp10.000)</option>
+        </select>
+      </div>
+      <div>
+        <label for="pembayaran" class="block font-medium">Metode Pembayaran</label>
+        <select id="pembayaran" class="border rounded p-2 w-full" aria-label="Metode Pembayaran">
+          <option value="cod">COD / Tunai</option>
+          <option value="bri">Transfer Bank - BRI</option>
+		  <option value="bni">Transfer Bank - BNI</option>
+		  <option value="dana">E-Wallet - DANA</option>
+		  <option value="ovo">E-Wallet - OVO</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Total -->
+    <section class="bg-white p-4 rounded shadow space-y-2 text-right">
+      <p>Subtotal: Rp <span id="subtotal">0</span></p>
+      <p>Biaya Layanan: Rp <span id="layanan">2000</span></p>
+      <p>Ongkir: Rp <span id="ongkir">0</span></p>
+      <p>Total Diskon: -Rp <span id="diskon">0</span></p>
+      <p class="text-xl font-bold">Total Pembayaran: Rp <span id="total">0</span></p>
+      <p class="text-green-600">Hemat: Rp <span id="hemat">0</span></p>
+      <button onclick="buatPesanan()" class="bg-green-500 text-white px-6 py-2 rounded shadow hover:bg-green-600">Buat Pesanan</button>
+    </section>
+  </main>
+
+  <footer class="bg-white text-center py-4 shadow-inner text-sm text-gray-500 mt-12">
+    &copy; <span id="currentYear"></span> Sweety Fruity. All rights reserved.
+  </footer>
+
+  <script>
+    let keranjang = JSON.parse(localStorage.getItem('keranjang') || '[]');
+
+    function renderRincian() {
+      const container = document.getElementById('rincian-pesanan');
+      let subtotal = 0;
+      container.innerHTML = '';
+
+      keranjang.forEach(item => {
+        subtotal += item.harga * item.jumlah;
+        const div = document.createElement('div');
+        div.className = 'flex items-center space-x-4 border-b py-2';
+        div.innerHTML = `
+          <img src="${item.gambar}" alt="${item.nama}" class="w-16 h-16 object-cover rounded">
+          <div class="flex-1">
+            <p class="font-semibold">${item.nama}</p>
+            <p>Qty: ${item.jumlah} &bull; Rp ${item.harga.toLocaleString()}</p>
+          </div>
+          <p class="text-right font-semibold">Rp ${(item.harga * item.jumlah).toLocaleString()}</p>
+        `;
+        container.appendChild(div);
+      });
+
+      document.getElementById('subtotal').textContent = subtotal.toLocaleString();
+      hitungTotal();
+    }
+
+    function updateOngkir() {
+      const alamat = document.getElementById('alamat').value;
+      let ongkir = 0;
+      if (alamat === 'Bandung') ongkir = 12000;
+      else if (alamat === 'Bandung Raya') ongkir = 15000;
+      else if (alamat === 'Jabodetabek') ongkir = 18000;
+      else ongkir = 21000;
+
+      document.getElementById('ongkir').textContent = ongkir.toLocaleString();
+      hitungTotal();
+    }
+
+    function hitungTotal() {
+      const subtotal = Number(document.getElementById('subtotal').textContent.replace(/\D/g, ''));
+      const ongkir = Number(document.getElementById('ongkir').textContent.replace(/\D/g, ''));
+      const layanan = 2000;
+      let diskon = 0;
+      let hemat = 0;
+
+      const voucher = document.getElementById('voucher-pilih').value;
+      if (voucher === 'gratis-ongkir') {
+        diskon = 10000;
+        hemat = 10000;
+      }
+
+      document.getElementById('diskon').textContent = diskon.toLocaleString();
+      document.getElementById('hemat').textContent = hemat.toLocaleString();
+
+      const total = subtotal + layanan + ongkir - diskon;
+      document.getElementById('total').textContent = total.toLocaleString();
+    }
+
+    function buatPesanan() {
+      const alamat = document.getElementById('alamat').value;
+      const total = document.getElementById('total').textContent;
+      const tanggal = new Date().toLocaleDateString('id-ID');
+      let estimasi = '3 hari';
+      if (alamat === 'Bandung Raya') estimasi = '5 hari';
+      else if (alamat === 'Jabodetabek') estimasi = '7 hari';
+      else if (alamat === 'Luar Jawa Barat') estimasi = '10 hari';
+	  const metodePembayaran = document.getElementById('pengiriman').value; // Ambil nilai dari dropdown
+	  localStorage.setItem('checkout_metode', metodePembayaran); // Simpan di LocalStorage
+      const riwayat = JSON.parse(localStorage.getItem('riwayat') || '[]');
+      riwayat.push({ tanggal, pesanan: keranjang, total, estimasi });
+      localStorage.setItem('riwayat', JSON.stringify(riwayat));
+      localStorage.removeItem('keranjang');
+      window.location.href = 'riwayat.html';
+    }
+
+    document.getElementById('voucher-pilih').addEventListener('change', hitungTotal);
+    document.getElementById('alamat').addEventListener('change', updateOngkir);
+
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+    renderRincian();
+    updateOngkir();
+  </script>
+</body>
+</html>
